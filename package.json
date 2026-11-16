@@ -1,0 +1,16 @@
+{
+  "name": "bot-stats",
+  "version": "1.0.0",
+  "description": "Discord bot: configurable leaderboard (/stat) and rules with role (/reglement), in Spanish",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  }
+}
