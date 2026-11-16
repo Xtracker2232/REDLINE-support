@@ -9,9 +9,11 @@ if (missing.length) {
   process.exit(1);
 }
 
-const reglement = require('./commands/reglement');
-const commands = [...require('./commands/stat'), ...reglement.commands];
-const components = { ...reglement.components };
+// Each module exports { commands, components }. Component handlers are keyed by the
+// customId part before ":" (e.g. "cfg_user:3" → "cfg_user").
+const modules = [require('./commands/stat'), require('./commands/config'), require('./commands/reglement')];
+const commands = modules.flatMap((m) => m.commands);
+const components = Object.assign({}, ...modules.map((m) => m.components ?? {}));
 const commandMap = new Map(commands.map((c) => [c.data.name, c]));
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -43,7 +45,7 @@ client.on(Events.GuildCreate, (guild) => {
 client.on(Events.InteractionCreate, async (i) => {
   try {
     if (i.isChatInputCommand()) await commandMap.get(i.commandName)?.execute(i);
-    else if (i.isButton()) await components[i.customId]?.(i);
+    else if (i.isMessageComponent() || i.isModalSubmit()) await components[i.customId.split(':')[0]]?.(i);
   } catch (err) {
     console.error(err);
     const payload = fail(`Algo salió mal: \`${String(err.message).slice(0, 300)}\``);

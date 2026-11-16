@@ -21,31 +21,34 @@ const RULES = [
   '**9. Escucha al staff**\nLas decisiones del staff son definitivas. Si tienes un problema, habla con un miembro del staff en privado.',
 ].join('\n\n');
 
+// Posts the rules in the interaction's channel. Returns an error text, or null if OK.
+async function postRules(i) {
+  const role = i.guild.roles.cache.get(config.rulesRoleId);
+  if (!role) return `El rol \`${config.rulesRoleId}\` no existe en este servidor. Revisa RULES_ROLE_ID.`;
+  if (role.position >= i.guild.members.me.roles.highest.position) {
+    return `Mi rol debe estar **por encima** de ${role} en Ajustes del servidor → Roles, si no, no puedo darlo.`;
+  }
+  const embed = new EmbedBuilder()
+    .setColor(config.color)
+    .setAuthor({ name: i.guild.name, iconURL: i.guild.iconURL() ?? undefined })
+    .setTitle('📜 Reglamento del servidor')
+    .setDescription(RULES)
+    .setFooter({ text: 'Al pulsar el botón aceptas el reglamento y obtienes acceso al servidor.' });
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId('rules_accept').setLabel('Acepto el reglamento').setEmoji('✅').setStyle(ButtonStyle.Success),
+  );
+  await i.channel.send({ embeds: [embed], components: [row] });
+  return null;
+}
+
 const reglement = {
   data: new SlashCommandBuilder()
     .setName('reglement')
     .setDescription('Publica el reglamento con el botón para aceptarlo')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild),
   async execute(i) {
-    const role = i.guild.roles.cache.get(config.rulesRoleId);
-    if (!role) return i.reply(fail(`El rol \`${config.rulesRoleId}\` no existe en este servidor. Revisa RULES_ROLE_ID.`));
-    if (role.position >= i.guild.members.me.roles.highest.position) {
-      return i.reply(
-        fail(`Mi rol debe estar **por encima** de ${role} en Ajustes del servidor → Roles, si no, no puedo darlo.`),
-      );
-    }
-
-    const embed = new EmbedBuilder()
-      .setColor(config.color)
-      .setAuthor({ name: i.guild.name, iconURL: i.guild.iconURL() ?? undefined })
-      .setTitle('📜 Reglamento del servidor')
-      .setDescription(RULES)
-      .setFooter({ text: 'Al pulsar el botón aceptas el reglamento y obtienes acceso al servidor.' });
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('rules_accept').setLabel('Acepto el reglamento').setEmoji('✅').setStyle(ButtonStyle.Success),
-    );
-    await i.channel.send({ embeds: [embed], components: [row] });
-    await i.reply(ok('Reglamento publicado.'));
+    const error = await postRules(i);
+    await i.reply(error ? fail(error) : ok('Reglamento publicado.'));
   },
 };
 
@@ -64,4 +67,4 @@ const components = {
   },
 };
 
-module.exports = { commands: [reglement], components };
+module.exports = { commands: [reglement], components, postRules };

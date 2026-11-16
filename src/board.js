@@ -63,17 +63,25 @@ async function slotEmbed(client, slot, index) {
   return embed;
 }
 
-async function buildBoard(client) {
+// ping: true only when the board is first posted, so players get notified once.
+// (Editing a message never pings again.)
+async function buildBoard(client, { ping = false } = {}) {
   const data = store.load();
   const embeds = await Promise.all(data.slots.map((slot, i) => slotEmbed(client, slot, i)));
+  const userIds = [...new Set(data.slots.map((s) => s.userId).filter(Boolean))];
   const header = [
     `# 🏆 ${data.title}`,
     data.description,
+    userIds.length ? `👥 ${userIds.map((id) => `<@${id}>`).join(' ')}` : '',
     `-# Actualizado <t:${Math.floor(Date.now() / 1000)}:R>`,
   ]
     .filter(Boolean)
     .join('\n');
-  return { content: header.slice(0, 2000), embeds, allowedMentions: { parse: [] } };
+  return {
+    content: header.slice(0, 2000),
+    embeds,
+    allowedMentions: ping ? { users: userIds } : { parse: [] },
+  };
 }
 
 // Edit every published board. Boards whose message was deleted are forgotten.
@@ -102,4 +110,4 @@ async function refreshBoards(client) {
   }
 }
 
-module.exports = { buildBoard, refreshBoards, slotEmbed, flag };
+module.exports = { buildBoard, refreshBoards, slotEmbed, flag, stateText };

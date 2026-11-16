@@ -7,18 +7,19 @@ Bot Discord en espagnol : tableau de classement configurable (`/stat`) et règle
 | Commande | Qui | Description |
 |---|---|---|
 | `/stat` | Tout le monde | Affiche le classement (ou `posicion:3` pour une seule place) |
-| `/stat-config editar` | Admin | Modifie une place : joueur, nom, rang, host, état, cooldown, pays, image |
-| `/stat-config quitar` | Admin | Vide une place |
-| `/stat-config mover` | Admin | Échange deux places |
-| `/stat-config titulo` | Admin | Change le titre / la description du tableau |
-| `/stat-config publicar` | Admin | Poste le tableau dans un salon : il se met à jour tout seul |
-| `/stat-config vaciar` | Admin | Vide tout le tableau |
+| `/config` | Admin | Ouvre le panel pour tout configurer (voir ci-dessous) |
 | `/reglement` | Admin | Poste le règlement avec le bouton qui donne le rôle `RULES_ROLE_ID` |
 
-Astuces pour `editar` :
-- écris `-` dans un champ pour l'effacer ;
-- `pais` accepte un code (`ES`, `FR`, `MX`) → 🇪🇸 🇫🇷 🇲🇽 ;
-- `cooldown_horas:2` met "En cooldown" avec un compte à rebours, et repasse en "Sin cooldown" tout seul.
+### Le panel `/config` (visible seulement par toi)
+- **Menu "Elige un puesto"** → ouvre une place :
+  - 👤 menu **@** pour choisir le joueur (sa mention et son avatar s'affichent sur le tableau)
+  - 🚦 menu d'état : Sin cooldown, No disponible, cooldown 1h/2h/6h/12h/24h/48h (compte à rebours automatique)
+  - 📝 **Editar datos** : formulaire nom, rang, host, pays (`ES` → 🇪🇸), image
+  - ⬆️⬇️ monter/descendre, 🧹 vider, ◀️▶️ place précédente/suivante, ⬅️ retour
+- 🏷️ **Título** : titre et description du tableau
+- 📤 **Publicar aquí** : poste le tableau dans le salon actuel, mentionne les joueurs, puis se met à jour tout seul
+- 📜 **Reglamento aquí** : poste le règlement dans le salon actuel
+- 🗑️ **Vaciar todo** : vide les 10 places (avec confirmation)
 
 ## Installation
 
