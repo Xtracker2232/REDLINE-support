@@ -52,4 +52,19 @@ client.on(Events.InteractionCreate, async (i) => {
   }
 });
 
-client.login(config.token);
+client.on(Events.Error, (e) => console.error('❌ Client error:', e.message));
+client.on(Events.Warn, (m) => console.warn('⚠️', m));
+client.on(Events.ShardDisconnect, (e) => console.error(`❌ Disconnected from Discord (code ${e.code})`));
+
+console.log(`🔌 Connecting to Discord... (token length: ${config.token.length})`);
+const timer = setTimeout(
+  () => console.error('⏳ Still not connected after 30s. Check DISCORD_TOKEN (Developer Portal > Bot > Reset Token).'),
+  30_000,
+);
+client.once(Events.ClientReady, () => clearTimeout(timer));
+
+client.login(config.token).catch((e) => {
+  console.error(`❌ Login failed: ${e.message}`);
+  console.error('   → Copy a fresh token from Developer Portal > Bot > Reset Token into DISCORD_TOKEN.');
+  process.exit(1);
+});
